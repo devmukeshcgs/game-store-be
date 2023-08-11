@@ -15,6 +15,9 @@ module.exports = (app) => {
   // Retrieve a single LinkedInUsers with id
   router.get("/:id", linkedInUsers.findOne);
 
+  // Retrieve a single LinkedInUsers with id
+  router.get("/isexist/:username", linkedInUsers.findByUsername);
+
   // Update a LinkedInUsers with id
   router.put("/:id", linkedInUsers.update);
 

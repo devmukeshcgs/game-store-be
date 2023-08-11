@@ -16,19 +16,37 @@ exports.create = (req, res) => {
     published: req.body.published ? req.body.published : false,
   });
 
-  // Save LinkedInUsers in the database
-  linkedInUsers
-    .save(linkedInUsers)
+  LinkedInUsers.find({ username: req.body.username })
     .then((data) => {
       res.send(data);
+      if (data.length > 0) {
+        console.log("USER EXIST--------------------The array is not empty.");
+      } else {
+        console.log("The array is empty.");
+        createUser(linkedInUsers);
+      }
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message ||
-          "Some error occurred while creating the LinkedInUsers.",
+          err.message || "Some error occurred while retrieving linkedInUsers.",
       });
     });
+  function createUser(linkedInUsers) {
+    // Save LinkedInUsers in the database
+    linkedInUsers
+      .save(linkedInUsers)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message ||
+            "Some error occurred while creating the LinkedInUsers.",
+        });
+      });
+  }
 };
 
 // Retrieve all Tutorials from the database.
@@ -67,6 +85,42 @@ exports.findOne = (req, res) => {
         .status(500)
         .send({ message: "Error retrieving LinkedInUsers with id=" + id });
     });
+};
+
+// Find a single LinkedInUsers with an id
+exports.findByUsername = (req, res) => {
+  const username = req.params.username;
+  LinkedInUsers.find({ username: username })
+    .then((data) => {
+      res.send({ ...data, isRegister: true });
+      console.log("DATA", data);
+      if (data.length > 0) {
+        console.log("The array is not empty.");
+      } else {
+        console.log("The array is empty.");
+        const obj = null;
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving linkedInUsers.",
+      });
+    });
+
+  // LinkedInUsers.findById(username)
+  //   .then((data) => {
+  //     if (!data)
+  //       res.status(404).send({
+  //         message: "Not found LinkedInUsers with username " + username,
+  //       });
+  //     else res.send(data);
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).send({
+  //       message: "Error retrieving LinkedInUsers with username=" + username,
+  //     });
+  //   });
 };
 
 // Update a LinkedInUsers by the id in the request
@@ -138,7 +192,8 @@ exports.deleteAll = (req, res) => {
 exports.findAllPublished = (req, res) => {
   LinkedInUsers.find({ published: true })
     .then((data) => {
-      res.send(data);
+      console.log("DATA", data);
+      res.send({ ...data, isRegister: true });
     })
     .catch((err) => {
       res.status(500).send({
